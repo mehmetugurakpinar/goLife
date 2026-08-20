@@ -16,22 +16,32 @@ func (p Product) CalculateTotal() decimal.Decimal {
 	return p.PricePerKg.Mul(decimal.NewFromFloat(p.Quantity))
 }
 
+func (p Product) Describe() (string, decimal.Decimal) {
+	total := p.CalculateTotal()
+	desc := fmt.Sprintf("%v kg %v cost %v USD!", p.Quantity, p.Name, total)
+	return desc, total
+}
+
 func main() {
-	watermelon := Product{
-		Name:       "Watermelon",
-		PricePerKg: decimal.NewFromFloat(1.00),
-		Quantity:   2.5,
+	products := []Product{
+		{
+			Name:       "Watermelon",
+			PricePerKg: decimal.NewFromFloat(1.00),
+			Quantity:   2.5,
+		},
+		{
+			Name:       "Banana",
+			PricePerKg: decimal.NewFromFloat(2.00),
+			Quantity:   1.5,
+		},
 	}
+	//products := []Product{watermelon, banana}
 
-	banana := Product{
-		Name:       "Banana",
-		PricePerKg: decimal.NewFromFloat(2.00),
-		Quantity:   1.5,
+	grandTotal := decimal.Zero
+	for _, p := range products {
+		desc, total := p.Describe()
+		fmt.Println(desc)
+		grandTotal = grandTotal.Add(total)
 	}
-
-	watermelonTotal := watermelon.CalculateTotal()
-	bananaTotal := banana.CalculateTotal()
-	fmt.Printf("%v kg %v cost %v USD!\n", watermelon.Quantity, watermelon.Name, watermelonTotal)
-	fmt.Printf("%v kg %v cost %v USD!\n", banana.Quantity, banana.Name, bananaTotal)
-	fmt.Printf("Total price: %v USD\n", watermelonTotal.Add(bananaTotal))
+	fmt.Printf("Grand Total: %v USD\n", grandTotal)
 }

@@ -12,6 +12,17 @@ type Product struct {
 	PricePerKg decimal.Decimal
 }
 
+func newProduct(name string, quantity float64, PricePerKg decimal.Decimal) (Product, error) {
+	if quantity <= 0 {
+		return Product{}, fmt.Errorf("quantity must be positive")
+	}
+	if PricePerKg.IsZero() {
+		return Product{}, fmt.Errorf("pricePerKg must be greater than zero")
+	}
+
+	return Product{name, quantity, PricePerKg}, nil
+}
+
 func (p Product) CalculateTotal() decimal.Decimal {
 	return p.PricePerKg.Mul(decimal.NewFromFloat(p.Quantity))
 }
@@ -23,19 +34,17 @@ func (p Product) Describe() (string, decimal.Decimal) {
 }
 
 func main() {
-	products := []Product{
-		{
-			Name:       "Watermelon",
-			PricePerKg: decimal.NewFromFloat(1.00),
-			Quantity:   2.5,
-		},
-		{
-			Name:       "Banana",
-			PricePerKg: decimal.NewFromFloat(2.00),
-			Quantity:   1.5,
-		},
+	apple, err := newProduct("Apple", 1.0, decimal.NewFromFloat(1.50))
+	if err != nil {
+		fmt.Println("Error creating apple:", err)
+		return
 	}
-	//products := []Product{watermelon, banana}
+	orange, err := newProduct("Orange", 2.0, decimal.NewFromFloat(2.50))
+	if err != nil {
+		fmt.Println("Error creating orange:", err)
+		return
+	}
+	products := []Product{apple, orange}
 
 	grandTotal := decimal.Zero
 	for _, p := range products {
